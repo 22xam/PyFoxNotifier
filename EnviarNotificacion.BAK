@@ -1,0 +1,32 @@
+PROCEDURE EnviarNotificacion
+    LPARAMETERS tcTitulo, tcMensaje
+
+    * Usar "python" directamente, asumiendo que está en el PATH
+    LOCAL lcPythonExe
+    lcPythonExe = "python"  && Usar el ejecutable de Python desde el PATH
+
+    * Obtener el directorio actual donde se está ejecutando el PRG
+    LOCAL lcCurrentDir
+    lcCurrentDir = JUSTPATH(FULLPATH(SYS(16,0)))  && Obtiene el directorio completo del PRG en ejecución
+
+    * Construir la ruta completa al script de Python en el directorio actual
+    LOCAL lcScriptPath
+    lcScriptPath = lcCurrentDir + "\notificacion.py"  && Asume que el script está en el mismo directorio
+
+    * Construir el comando
+    LOCAL lcCommand
+    lcCommand = lcPythonExe + " " + lcScriptPath + " " + ;
+                '"' + tcTitulo + '"' + " " + ;
+                '"' + tcMensaje + '"'
+
+    * Ejecutar el comando
+    DECLARE INTEGER ShellExecute IN shell32.dll ;
+        INTEGER hndWin, ;
+        STRING cAction, ;
+        STRING cFile, ;
+        STRING cParams, ;
+        STRING cDir, ;
+        INTEGER nShowWin
+
+    =ShellExecute(0, "open", lcPythonExe, lcScriptPath + " " + '"' + tcTitulo + '" ' + '"' + tcMensaje + '"', "", 1)
+ENDPROC
